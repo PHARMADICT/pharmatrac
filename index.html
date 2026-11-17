@@ -1,552 +1,509 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>VYSAKH MASTER SALES TRACKER</title>
-<style>
-:root{
-  --bg:#f8fafc; --card:#ffffff; --navy:#0f243d; --green:#059669;
-  --mint:#ecfdf5; --mintb:#a7f3d0; --wa:#25D366; --text:#0f172a; --muted:#64748b;
-  color-scheme: light;
-}
-*{box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action:manipulation;}
-html{height:100%; -webkit-text-size-adjust:100%; text-size-adjust:100%;}
-body{height:100%; margin:0; font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text);
-  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility;
-  overscroll-behavior-y:none; scroll-behavior:smooth;
-  padding-top:env(safe-area-inset-top,0px); padding-bottom:calc(72px + env(safe-area-inset-bottom,0px));}
-header{background:rgba(15,36,61,.94); -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px); color:#fff;
-  padding:10px calc(14px + env(safe-area-inset-right,0px)) 10px calc(14px + env(safe-area-inset-left,0px)); position:sticky; top:0; z-index:20;}
-header h1{font-size:15px; margin:0 0 6px; letter-spacing:.3px;}
-.storebar{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; padding-bottom:2px;}
-.storebar::-webkit-scrollbar{display:none;}
-.chip{flex:0 0 auto; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25); color:#fff; scroll-snap-align:start;
-  padding:6px 12px; border-radius:16px; font-size:12px; white-space:nowrap; transition:transform .15s cubic-bezier(.34,1.56,.64,1), background .15s;}
-.chip:active{transform:scale(.93);}
-.chip.active{background:var(--green); border-color:var(--green); font-weight:600;}
-.chip.add{background:transparent; border-style:dashed;}
-.sync{font-size:10px; opacity:.8; margin-top:4px;}
-main{padding:10px calc(10px + env(safe-area-inset-right,0px)) 0 calc(10px + env(safe-area-inset-left,0px));}
-.panel{display:none; opacity:0; transform:translateY(6px); transition:opacity .22s ease, transform .22s ease;}
-.panel.show{display:block;}
-.panel.show.in{opacity:1; transform:translateY(0);}
-.card{background:var(--card); border-radius:12px; padding:10px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,.06);}
-input,select{font-size:16px; padding:8px; border:1px solid #e2e8f0; border-radius:8px; background:#fff; color:var(--text); width:100%;
-  transition:border-color .15s, box-shadow .15s;}
-input:focus,select:focus{outline:none; border-color:var(--green); box-shadow:0 0 0 3px rgba(5,150,105,.15);}
-.search{margin-bottom:8px;}
-.brandrow{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; margin-bottom:8px;}
-.brandchip{flex:0 0 auto; padding:6px 10px; border-radius:14px; background:var(--mint); border:1px solid var(--mintb); font-size:12px; scroll-snap-align:start;
-  transition:transform .15s cubic-bezier(.34,1.56,.64,1), background .15s, color .15s;}
-.brandchip:active{transform:scale(.93);}
-.brandchip.active{background:var(--navy); color:#fff; border-color:var(--navy);}
-.grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
-.tile{background:var(--mint); border:1px solid var(--mintb); border-radius:10px; padding:6px 3px; text-align:center; font-size:10px;
-  min-height:66px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px;
-  transition:transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s, background .15s;}
-.tile:active{transform:scale(.93); box-shadow:0 0 0 2px var(--green) inset; background:#dcfce7;}
-.tile b{font-size:10px; line-height:1.2; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
-.tile span{color:var(--muted); font-size:8.5px;}
-.tile.addp{background:#fff; border-style:dashed; color:var(--muted); font-size:22px;}
-.todaylist table{width:100%; border-collapse:collapse; font-size:12px;}
-.todaylist th{text-align:left; color:var(--muted); font-weight:600; padding:4px; border-bottom:1px solid #e2e8f0;}
-.todaylist td{padding:4px; border-bottom:1px solid #f1f5f9;}
-.todaylist input{padding:4px; font-size:12px;}
-h3{font-size:13px; margin:0 0 8px; color:var(--navy);}
-.row{display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;}
-button{font-size:13px; padding:8px 10px; border:none; border-radius:8px; background:var(--navy); color:#fff;
-  transition:transform .12s cubic-bezier(.34,1.56,.64,1), opacity .12s;}
-button:active{transform:scale(.95); opacity:.85;}
-button.g{background:var(--green);}
-button.wa{background:var(--wa);}
-button.ghost{background:#eef2f7; color:var(--navy);}
-.navbar{position:fixed; bottom:0; left:0; right:0; display:flex; background:rgba(15,36,61,.96); -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px);
-  padding:8px calc(6px + env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) calc(6px + env(safe-area-inset-left,0px)); z-index:30;}
-.navbar button{flex:1; background:transparent; color:#cbd5e1; font-size:11px; padding:6px; transition:color .15s, transform .15s;}
-.navbar button:active{transform:scale(.9);}
-.navbar button.on{color:#fff; font-weight:700;}
-.reconfirm{position:fixed; left:10px; right:10px; bottom:calc(68px + env(safe-area-inset-bottom,0px)); background:var(--navy); color:#fff;
-  border-radius:12px; padding:10px 12px; z-index:40; transform:translateY(140%); transition:transform .35s cubic-bezier(.22,1,.36,1); box-shadow:0 6px 18px rgba(0,0,0,.25);}
-.reconfirm.show{transform:translateY(0);}
-.reconfirm .top{display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;}
-.reconfirm .actions{display:flex; gap:6px;}
-.reconfirm .actions button{flex:1; padding:7px; font-size:11px; background:rgba(255,255,255,.12); color:#fff;}
-.datehead{display:flex; justify-content:space-between; align-items:center; margin:10px 0 4px;}
-.datehead input{width:auto; flex:1; margin-right:6px; font-weight:600;}
-table.ledger{width:100%; border-collapse:collapse; font-size:11px;}
-table.ledger th{background:#f1f5f9; padding:5px 3px; text-align:left;}
-table.ledger td{padding:4px 3px; border-bottom:1px solid #f1f5f9;}
-table.ledger input{padding:3px; font-size:11px;}
-.totals{font-size:12px; font-weight:700; color:var(--navy); margin-top:4px;}
-.badge{font-size:10px; padding:3px 7px; border-radius:10px;}
-.badge.sent{background:var(--mint); color:var(--green); border:1px solid var(--mintb);}
-.badge.pending{background:#fff7ed; color:#c2410c; border:1px solid #fed7aa;}
-.modalbg{position:fixed; inset:0; background:rgba(0,0,0,0); display:flex; align-items:flex-end; z-index:50; opacity:0; visibility:hidden;
-  transition:opacity .25s ease, background .25s ease, visibility 0s linear .25s;}
-.modalbg.show{opacity:1; visibility:visible; background:rgba(0,0,0,.4); transition:opacity .25s ease, background .25s ease, visibility 0s;}
-.modal{background:#fff; border-radius:16px 16px 0 0; padding:16px; width:100%; padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));
-  transform:translateY(100%); transition:transform .32s cubic-bezier(.22,1,.36,1);}
-.modalbg.show .modal{transform:translateY(0);}
-.modal label{font-size:11px; color:var(--muted); display:block; margin:8px 0 3px;}
-textarea{width:100%; min-height:100px; font-size:12px; padding:8px; border:1px solid #e2e8f0; border-radius:8px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYSA23-10 · Master Data Dashboard</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            padding: 32px 24px;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-left h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #0f172a;
+        }
+
+        .header-left h1 i {
+            color: #3b82f6;
+            margin-right: 10px;
+        }
+
+        .header-left .subtitle {
+            font-size: 0.95rem;
+            color: #64748b;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            color: #1e293b;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .badge.blue {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge.green {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .badge.amber {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9edf4;
+            transition: 0.2s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 6px;
+            line-height: 1.2;
+        }
+
+        .stat-value small {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-left: 4px;
+        }
+
+        /* Section headers */
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 32px 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #0f172a;
+        }
+
+        .section-title i {
+            color: #3b82f6;
+            font-size: 1.1rem;
+        }
+
+        .section-title .count {
+            font-size: 0.8rem;
+            background: #e2e8f0;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #475569;
+            margin-left: 6px;
+        }
+
+        /* Table wrapper */
+        .table-wrapper {
+            background: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e9edf4;
+            overflow-x: auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.86rem;
+            min-width: 700px;
+        }
+
+        thead {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        thead th {
+            text-align: left;
+            padding: 14px 16px;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            color: #1e293b;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .text-mono {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.01em;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .flag-ok {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .flag-review {
+            color: #d97706;
+            font-weight: 600;
+        }
+
+        .flag-corrected {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .promo-tag {
+            display: inline-block;
+            background: #eef2ff;
+            color: #4f46e5;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .promo-tag.empty {
+            background: transparent;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .dq-id {
+            font-weight: 600;
+            color: #0f172a;
+            font-family: monospace;
+        }
+
+        .pill-sm {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .footer-note {
+            margin-top: 36px;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 24px;
+        }
+
+        .footer-note i {
+            margin-right: 4px;
+        }
+
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .two-col-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 16px;
+            }
+            .header-left h1 {
+                font-size: 1.4rem;
+            }
+            .stat-value {
+                font-size: 1.4rem;
+            }
+        }
+
+        .scroll-hint {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-top: 6px;
+            text-align: right;
+            padding-right: 8px;
+        }
+
+        .scroll-hint i {
+            margin-right: 4px;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
 
-<header>
-  <h1>💊 VYSAKH MASTER SALES TRACKER</h1>
-  <div class="storebar" id="storebar"></div>
-  <div class="sync" id="syncstat">local only</div>
-  <div class="row" style="margin-top:4px;">
-    <button class="ghost" style="padding:5px 9px;font-size:11px;" onclick="undo()">↩️ Undo</button>
-    <button class="ghost" style="padding:5px 9px;font-size:11px;" onclick="redo()">↪️ Redo</button>
-  </div>
-</header>
+        <!-- ========== HEADER ========== -->
+        <div class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-database"></i> VYSA23-10 · Master Data</h1>
+                <div class="subtitle">
+                    <span><i class="fas fa-calendar-alt"></i> 2026-10-23 → 2026-11-10</span>
+                    <span class="badge blue">AED</span>
+                    <span class="badge green"><i class="fas fa-check-circle"></i> Cleaned & Normalized</span>
+                    <span class="badge amber"><i class="fas fa-flag"></i> 11 Review flags</span>
+                </div>
+            </div>
+            <div>
+                <span class="badge" style="font-size:0.8rem; background:#0f172a; color:white; padding:8px 18px;">
+                    <i class="fas fa-code-branch"></i> v1.0 · Production Ready
+                </span>
+            </div>
+        </div>
 
-<main>
-  <section class="panel show" id="p-entries">
-    <div class="card">
-      <input class="search" id="search" placeholder="Search product...">
-      <div class="brandrow" id="brandrow"></div>
-      <div class="grid" id="grid"></div>
-    </div>
-    <div class="card todaylist">
-      <h3>Today's Entries — <span id="todaydate"></span></h3>
-      <table id="todaytable"><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead><tbody></tbody></table>
-      <div class="totals" id="todaytotal"></div>
-    </div>
-    <div class="card">
-      <h3>Smart Paste Import</h3>
-      <div class="row"><button class="ghost" onclick="openPaste()">📋 Paste Data</button></div>
-    </div>
-  </section>
+        <!-- ========== STATS ========== -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Locations</div>
+                <div class="stat-value">4</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Products</div>
+                <div class="stat-value">18</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Promotions</div>
+                <div class="stat-value">3</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Transactions</div>
+                <div class="stat-value">50</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Gross Sales</div>
+                <div class="stat-value">13,247<small>AED</small></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Net Sales</div>
+                <div class="stat-value">12,107<small>AED</small></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">DQ Logs</div>
+                <div class="stat-value">14</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">SKUs Sold</div>
+                <div class="stat-value">17<small>/18</small></div>
+            </div>
+        </div>
 
-  <section class="panel" id="p-ledger">
-    <div class="card">
-      <div class="row">
-        <button class="g" onclick="exportCSV()">⬇ CSV</button>
-        <button class="ghost" onclick="exportTSV()">⬇ TSV</button>
-        <button class="wa" onclick="shareWA()">💬 WhatsApp</button>
-      </div>
-      <div class="row">
-        <button class="g" onclick="addNewDate()">+ New Date</button>
-      </div>
-      <label style="font-size:11px;color:var(--muted)">Incentive %</label>
-      <input type="number" id="incpct" value="10" min="1" max="100" onchange="setIncentive(this.value)">
-    </div>
-    <div id="ledgerbody"></div>
-  </section>
+        <!-- ========== TWO COLUMN: LOCATIONS & PROMOTIONS ========== -->
+        <div class="two-col-grid">
+            <!-- Locations -->
+            <div>
+                <div class="section-title">
+                    <i class="fas fa-store"></i> Locations
+                    <span class="count">4</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>City</th>
+                                <th>Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="text-mono">LOC-01</td><td>DUBAI MALL</td><td>MALL</td><td>Dubai</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i></span></td></tr>
+                            <tr><td class="text-mono">LOC-02</td><td>MARINA MALL</td><td>MALL</td><td>Dubai</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i></span></td></tr>
+                            <tr><td class="text-mono">LOC-03</td><td>RESIDENCE</td><td>RESIDENCE</td><td>Dubai</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i></span></td></tr>
+                            <tr><td class="text-mono">LOC-04</td><td>OUTLET MALL</td><td>OUTLET</td><td>Dubai</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i></span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-  <section class="panel" id="p-history">
-    <div class="card">
-      <h3>Reconciliation</h3>
-      <label>Report sent up to date</label>
-      <input type="date" id="reportDate" onchange="saveRecon()">
-      <label>Amount received (AED)</label>
-      <input type="number" id="amountRecv" onchange="saveRecon()">
-      <div class="totals" id="reconTotals" style="margin-top:10px;"></div>
-    </div>
-    <div class="card" id="dateStatusCard">
-      <h3>Daily Status</h3>
-      <div id="dateStatusList"></div>
-    </div>
-  </section>
-</main>
+            <!-- Promotions -->
+            <div>
+                <div class="section-title">
+                    <i class="fas fa-tags"></i> Promotions
+                    <span class="count">3</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Code</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Buy</th>
+                                <th>Get</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="text-mono">PRO-01</td><td><span class="promo-tag">B1GSH</span></td><td>BOGO</td><td>Buy 1 Get 1 (Same Item Free)</td><td>1</td><td>1</td></tr>
+                            <tr><td class="text-mono">PRO-02</td><td><span class="promo-tag">BOSH</span></td><td>BOGO_HALF</td><td>Buy One, Second at Half Price</td><td>1</td><td>1</td></tr>
+                            <tr><td class="text-mono">PRO-03</td><td><span class="promo-tag">B1G1</span></td><td>BOGO</td><td>Buy 1 Get 1 Free</td><td>1</td><td>1</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<div class="navbar">
-  <button id="nav-entries" class="on" onclick="showPanel('entries')">💊 ENTRIES</button>
-  <button id="nav-ledger" onclick="showPanel('ledger')">📊 LEDGER</button>
-  <button id="nav-history" onclick="showPanel('history')">💰 HISTORY</button>
-</div>
+        <!-- ========== PRODUCTS (Master) ========== -->
+        <div class="section-title">
+            <i class="fas fa-pills"></i> Products (Master)
+            <span class="count">18</span>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Name</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Pack</th>
+                        <th class="text-right">Std Price (AED)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="text-mono">PRD-01</td><td>WHITE HEALTH MAGNESIUM GLYCINATE 400MG 60CAPS</td><td>WHITE HEALTH</td><td>Magnesium</td><td>60CAPS</td><td class="text-right">189.00</td></tr>
+                    <tr><td class="text-mono">PRD-02</td><td>WHITE HEALTH PROBIOTIC XTRA 50 BILLION 30S</td><td>WHITE HEALTH</td><td>Probiotic</td><td>30S</td><td class="text-right">298.00</td></tr>
+                    <tr><td class="text-mono">PRD-03</td><td>HEALTH AID FEMEMVIT TABS 60S</td><td>HEALTH AID</td><td>Women's Health</td><td>60S</td><td class="text-right">126.00</td></tr>
+                    <tr><td class="text-mono">PRD-04</td><td>KEENVITA MOVFLEX JOINT CARE 120 TAB</td><td>KEENVITA</td><td>Joint Care</td><td>120TAB</td><td class="text-right">299.00</td></tr>
+                    <tr><td class="text-mono">PRD-05</td><td>HEALTH AID MAGNESIUM BISGLYCINATE 375MG VIT B6 TAB 60S</td><td>HEALTH AID</td><td>Magnesium</td><td>60S</td><td class="text-right">200.00</td></tr>
+                    <tr><td class="text-mono">PRD-06</td><td>HEALTH AID HAIR VIT CAPS 30S</td><td>HEALTH AID</td><td>Hair Care</td><td>30S</td><td class="text-right">150.00</td></tr>
+                    <tr><td class="text-mono">PRD-07</td><td>HEALTH AID PSYLLIUM HUSK 100MG VEG CAPS 60S</td><td>HEALTH AID</td><td>Digestive</td><td>60S</td><td class="text-right">152.25</td></tr>
+                    <tr><td class="text-mono">PRD-08</td><td>TAUROPAX FORCE 60 CAPSULES</td><td>TAUROPAX</td><td>General Health</td><td>60CAPS</td><td class="text-right">290.00</td></tr>
+                    <tr><td class="text-mono">PRD-09</td><td>PURITAN'S PRIDE VIT D</td><td>PURITAN'S PRIDE</td><td>Vitamin D</td><td>—</td><td class="text-right">122.00</td></tr>
+                    <tr><td class="text-mono">PRD-10</td><td>HEALTH AID VITAMIN B50 COMPLEX TABS 30S</td><td>HEALTH AID</td><td>Vitamin B</td><td>30S</td><td class="text-right">100.00</td></tr>
+                    <tr><td class="text-mono">PRD-11</td><td>NUTRIGEN OMGA</td><td>NUTRIGEN</td><td>Omega</td><td>—</td><td class="text-right">100.00</td></tr>
+                    <tr><td class="text-mono">PRD-12</td><td>HEALTH AID KIDZ OMEGA LIQUID 200ML</td><td>HEALTH AID</td><td>Kids Health</td><td>200ML</td><td class="text-right">157.50</td></tr>
+                    <tr><td class="text-mono">PRD-13</td><td>KEENVITA OMEGA 3 2000MG 120 TAB</td><td>KEENVITA</td><td>Omega</td><td>120TAB</td><td class="text-right">299.00</td></tr>
+                    <tr><td class="text-mono">PRD-14</td><td>WHITE HEALTH COQ 10 30S TAB</td><td>WHITE HEALTH</td><td>CoQ10</td><td>30S</td><td class="text-right">229.05</td></tr>
+                    <tr><td class="text-mono">PRD-15</td><td>FEMPAX 60S</td><td>FEMPAX</td><td>Women's Health</td><td>60S</td><td class="text-right">282.00</td></tr>
+                    <tr><td class="text-mono">PRD-16</td><td>HEALTH AID LIVER CARE TAB 60S</td><td>HEALTH AID</td><td>Liver Care</td><td>60S</td><td class="text-right">220.50</td></tr>
+                    <tr><td class="text-mono">PRD-17</td><td>HEALTH AID VIT C 1000MG EFF ORANGE 20S</td><td>HEALTH AID</td><td>Vitamin C</td><td>20S</td><td class="text-right">42.50</td></tr>
+                    <tr><td class="text-mono">PRD-18</td><td>WHITE HEALTH VIT D3 FORTE 4000IU 60S</td><td>WHITE HEALTH</td><td>Vitamin D</td><td>60S</td><td class="text-right">208.00</td></tr>
+                </tbody>
+            </table>
+        </div>
 
-<div class="reconfirm" id="reconfirm">
-  <div class="top"><span id="rcText"></span><span id="rcTotal"></span></div>
-  <div class="actions">
-    <button onclick="rcUndo()">↩️ Undo</button>
-    <button onclick="rcQty(-1)">−1</button>
-    <button onclick="rcQty(1)">+1</button>
-    <button onclick="rcEdit()">✏️ Edit</button>
-    <button onclick="rcOk()">✓ OK</button>
-  </div>
-</div>
-
-<div class="modalbg" id="pasteModal">
-  <div class="modal">
-    <h3>Paste TSV/CSV data</h3>
-    <textarea id="pasteArea" placeholder="Item&#9;Qty&#9;Price..."></textarea>
-    <div class="row" style="margin-top:8px;">
-      <button class="g" onclick="doPaste()">Import</button>
-      <button class="ghost" onclick="closePaste()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<div class="modalbg" id="editModal">
-  <div class="modal" id="editModalBody"></div>
-</div>
-
-<script>
-/* ---------- State ---------- */
-const LS_KEY='vmst_state_v1';
-let state = loadLocal() || {
-  stores:['Dubai Mall','Residence Tower','IBN Battuta'],
-  activeStore:'Dubai Mall',
-  incentivePct:10,
-  catalog:[
-    {id:'c1',name:'GINKOVITAL 500MG 30S',brand:'H-A',price:168},
-    {id:'c2',name:'HAIR VIT CAPS 30S',brand:'H-A',price:126},
-    {id:'c3',name:'KIDS PROBIO 30S',brand:'H-A',price:126},
-    {id:'c4',name:'FEMMEVIT TABS 60S',brand:'H-A',price:126},
-    {id:'c5',name:'MAGNESIUM BISGLYCINATE',brand:'H-A',price:200},
-    {id:'c6',name:'VITAMIN B50 COMPLEX',brand:'H-A',price:73.5},
-    {id:'c7',name:'PSYLLIUM HUSK 100MG CAPS 60S',brand:'H-A',price:152.25},
-    {id:'c8',name:'LIVERCARE TAB 60S',brand:'H-A',price:220.5},
-    {id:'c9',name:'VIT C 1000MG EFF ORANGE',brand:'H-A',price:42.5},
-    {id:'c10',name:'VIT C 1000MG EFF BLKCRNT',brand:'H-A',price:42.34},
-    {id:'c11',name:'ZIMACAL EFFERVESCENT',brand:'H-A',price:100},
-    {id:'c12',name:'KIDZ OMEGA LIQUID',brand:'H-A',price:157.5},
-    {id:'c13',name:'MAGNESIUM GLYCINATE',brand:'W-H',price:189},
-    {id:'c14',name:'PROBIOTIC XTRA',brand:'W-H',price:310},
-    {id:'c15',name:'VITA C-1000 LIPOSOMAL',brand:'W-H',price:160},
-    {id:'c16',name:'COQ 10 30S TAB',brand:'W-H',price:229.05},
-    {id:'c17',name:'VIT D3 FORTE 4000IU 60S',brand:'W-H',price:208},
-    {id:'c18',name:'SLIM DETOX CAPS 30S',brand:'W-H',price:189},
-    {id:'c19',name:'MULTICOMPLETE',brand:'K-V',price:225},
-    {id:'c20',name:'MOVFLEX JOINT CARE 120 TAB',brand:'K-V',price:299},
-    {id:'c21',name:'OMEGA 3 2000MG',brand:'K-V',price:299},
-    {id:'c22',name:'MAGNESIUM GLYCINATE 398',brand:'K-V',price:189},
-    {id:'c23',name:'VIRILE ENHA PERFORM',brand:'G-R',price:252},
-  ],
-  entries:[], // {id,date,store,item,qty,price,soldPlace}
-  recon:{reportDate:'',amountReceived:0,sentDates:{}}
-};
-if(!state.recon.sentDates) state.recon.sentDates={};
-let lastAction=null; // for reconfirm undo/edit
-let undoStack=[]; let redoStack=[];
-let paste={open:false};
-
-function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
-function fmtDMY(iso){ const [y,m,d]=iso.split('-'); return `${d}-${m}-${y}`; }
-
-function saveLocal(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); saveData(); }
-function loadLocal(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)); }catch(e){ return null; } }
-
-function snapshot(){ undoStack.push(JSON.stringify(state)); if(undoStack.length>100) undoStack.shift(); redoStack=[]; }
-function undo(){ if(!undoStack.length) return; redoStack.push(JSON.stringify(state)); state=JSON.parse(undoStack.pop()); saveLocal(); renderAll(); }
-function redo(){ if(!redoStack.length) return; undoStack.push(JSON.stringify(state)); state=JSON.parse(redoStack.pop()); saveLocal(); renderAll(); }
-
-/* ---------- Cross-device sync (db capability) ---------- */
-let db=null, dbUser=null, dbReady=false;
-(async()=>{
-  try{
-    db = await claude.use('db');
-    dbUser = await claude.use('user');
-    if(db){
-      document.getElementById('syncstat').textContent='connecting…';
-      const doc = await db.doc('data/users/me/app').get();
-      if(doc && doc.data){ state = doc.data; }
-      dbReady=true;
-      document.getElementById('syncstat').textContent='synced ✓';
-      renderAll();
-      db.doc('data/users/me/app').onSnapshot(d=>{
-        if(d && d.data && JSON.stringify(d.data)!==JSON.stringify(state)){
-          state=d.data; renderAll();
-        }
-      });
-    } else {
-      document.getElementById('syncstat').textContent='local only (sign in for sync)';
-    }
-  }catch(e){ document.getElementById('syncstat').textContent='local only'; }
-})();
-
-let pushTimer=null;
-function setSyncStatus(s){ document.getElementById('syncstat').textContent=s; }
-function saveData(){
-  if(!db || !dbReady){ setSyncStatus('🔴 local only'); return; }
-  setSyncStatus('🟡 syncing…');
-  clearTimeout(pushTimer);
-  pushTimer=setTimeout(async()=>{
-    try{ await db.doc('data/users/me/app').set(state); setSyncStatus('🟢 synced ✓'); }
-    catch(e){ setSyncStatus('⚠️ sync error (saved locally)'); }
-  },800);
-}
-
-/* ---------- Nav ---------- */
-function showPanel(name){
-  document.querySelectorAll('.panel').forEach(p=>{p.classList.remove('show'); p.classList.remove('in');});
-  const panel=document.getElementById('p-'+name);
-  panel.classList.add('show');
-  requestAnimationFrame(()=>requestAnimationFrame(()=>panel.classList.add('in')));
-  document.querySelectorAll('.navbar button').forEach(b=>b.classList.remove('on'));
-  document.getElementById('nav-'+name).classList.add('on');
-  if(name==='ledger') renderLedger();
-  if(name==='history') renderHistory();
-}
-
-/* ---------- Store bar ---------- */
-function renderStoreBar(){
-  const el=document.getElementById('storebar'); el.innerHTML='';
-  state.stores.forEach(s=>{
-    const c=document.createElement('div');
-    c.className='chip'+(s===state.activeStore?' active':'');
-    c.textContent=s;
-    c.onclick=()=>{ state.activeStore=s; saveLocal(); renderAll(); };
-    c.ondblclick=()=>{ const nn=prompt('Rename store',s); if(nn){ snapshot(); state.entries.forEach(e=>{if(e.store===s)e.store=nn;}); state.stores=state.stores.map(x=>x===s?nn:x); if(state.activeStore===s)state.activeStore=nn; saveLocal(); renderAll(); } };
-    c.oncontextmenu=(ev)=>{ ev.preventDefault(); if(confirm('Delete store "'+s+'"?')){ snapshot(); state.stores=state.stores.filter(x=>x!==s); if(state.activeStore===s) state.activeStore=state.stores[0]||''; saveLocal(); renderAll(); } };
-    el.appendChild(c);
-  });
-  const add=document.createElement('div');
-  add.className='chip add'; add.textContent='+ Store';
-  add.onclick=()=>{ const n=prompt('New store name'); if(n){ snapshot(); state.stores.push(n); state.activeStore=n; saveLocal(); renderAll(); } };
-  el.appendChild(add);
-}
-
-/* ---------- Catalog / grid ---------- */
-let activeBrand='ALL'; let searchQ='';
-const brands=['ALL','W-H','K-V','H-A','P-P','PAX','G-R'];
-function renderBrandRow(){
-  const el=document.getElementById('brandrow'); el.innerHTML='';
-  brands.forEach(b=>{
-    const c=document.createElement('div');
-    c.className='brandchip'+(b===activeBrand?' active':'');
-    c.textContent=b; c.onclick=()=>{activeBrand=b; renderGrid();};
-    el.appendChild(c);
-  });
-}
-function renderGrid(){
-  const el=document.getElementById('grid'); el.innerHTML='';
-  let items=state.catalog.filter(p=>(activeBrand==='ALL'||p.brand===activeBrand) && p.name.toLowerCase().includes(searchQ.toLowerCase()));
-  items.forEach(p=>{
-    const t=document.createElement('div'); t.className='tile';
-    t.innerHTML=`<b>${p.name}</b><span>${p.brand} · ${p.price} AED</span>`;
-    let locked=false;
-    t.onclick=()=>{ if(locked)return; locked=true; setTimeout(()=>locked=false,450); addEntry(p); };
-    el.appendChild(t);
-  });
-  const addp=document.createElement('div'); addp.className='tile addp'; addp.textContent='+';
-  addp.onclick=()=>{
-    const name=prompt('Product name'); if(!name) return;
-    const brand=prompt('Brand code (W-H/K-V/H-A/P-P/PAX/G-R)','W-H')||'W-H';
-    const price=parseFloat(prompt('Unit price (AED)','0'))||0;
-    snapshot(); state.catalog.push({id:'c'+Date.now(),name,brand,price}); saveLocal(); renderGrid();
-  };
-  el.appendChild(addp);
-}
-document.getElementById('search').oninput=e=>{ searchQ=e.target.value; renderGrid(); };
-
-/* ---------- Entries / reconfirm ---------- */
-function addEntry(p){
-  snapshot();
-  const e={id:'e'+Date.now(), date:todayStr(), store:state.activeStore, item:p.name, qty:1, price:p.price, soldPlace:state.activeStore};
-  state.entries.push(e); saveLocal(); renderTodayList();
-  lastAction={entryId:e.id};
-  showReconfirm(e);
-}
-let rcTimer=null;
-function showReconfirm(e){
-  const el=document.getElementById('reconfirm');
-  document.getElementById('rcText').textContent=`${e.item} × ${e.qty}`;
-  document.getElementById('rcTotal').textContent=(e.qty*e.price).toFixed(2)+' AED';
-  el.classList.add('show');
-  clearTimeout(rcTimer); rcTimer=setTimeout(()=>el.classList.remove('show'),4500);
-}
-function curEntry(){ return state.entries.find(x=>x.id===lastAction?.entryId); }
-function rcUndo(){ const e=curEntry(); if(e){ snapshot(); state.entries=state.entries.filter(x=>x.id!==e.id); saveLocal(); renderTodayList(); } document.getElementById('reconfirm').classList.remove('show'); }
-function rcQty(d){ const e=curEntry(); if(e){ snapshot(); e.qty=Math.max(1,e.qty+d); saveLocal(); renderTodayList(); showReconfirm(e); } }
-function rcOk(){ document.getElementById('reconfirm').classList.remove('show'); }
-function rcEdit(){ const e=curEntry(); if(e) openEditEntry(e); }
-
-function openEditEntry(e){
-  const m=document.getElementById('editModal'); const b=document.getElementById('editModalBody');
-  b.innerHTML=`<h3>Edit Entry</h3>
-   <label>Item</label><input id="ei_item" value="${e.item}">
-   <label>Qty</label><input id="ei_qty" type="number" value="${e.qty}">
-   <label>Price (AED)</label><input id="ei_price" type="number" value="${e.price}">
-   <label>Sold Place</label><input id="ei_place" value="${e.soldPlace||''}">
-   <div class="row" style="margin-top:10px;"><button class="g" onclick="saveEditEntry('${e.id}')">Save</button>
-   <button class="ghost" onclick="closeEdit()">Cancel</button></div>`;
-  m.classList.add('show');
-}
-function closeEdit(){ document.getElementById('editModal').classList.remove('show'); }
-function saveEditEntry(id){
-  const e=state.entries.find(x=>x.id===id); if(!e) return;
-  snapshot();
-  e.item=document.getElementById('ei_item').value;
-  e.qty=parseFloat(document.getElementById('ei_qty').value)||1;
-  e.price=parseFloat(document.getElementById('ei_price').value)||0;
-  e.soldPlace=document.getElementById('ei_place').value;
-  saveLocal(); closeEdit(); renderAll();
-}
-
-function renderTodayList(){
-  document.getElementById('todaydate').textContent=fmtDMY(todayStr());
-  const tb=document.querySelector('#todaytable tbody'); tb.innerHTML='';
-  const today=state.entries.filter(e=>e.date===todayStr() && e.store===state.activeStore);
-  let total=0;
-  today.forEach(e=>{
-    total+=e.qty*e.price;
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${e.item}</td><td>${e.qty}</td><td>${e.price}</td><td>${(e.qty*e.price).toFixed(2)}</td>
-      <td><button class="ghost" style="padding:3px 6px;" onclick="openEditEntry(state.entries.find(x=>x.id==='${e.id}'))">✏️</button></td>`;
-    tb.appendChild(tr);
-  });
-  document.getElementById('todaytotal').textContent='Total: '+total.toFixed(2)+' AED';
-}
-
-/* ---------- Ledger ---------- */
-function renderLedger(){
-  document.getElementById('incpct').value=state.incentivePct;
-  const el=document.getElementById('ledgerbody'); el.innerHTML='';
-  const dates=[...new Set(state.entries.map(e=>e.date))].sort().reverse();
-  dates.forEach(date=>{
-    const rows=state.entries.filter(e=>e.date===date);
-    const card=document.createElement('div'); card.className='card';
-    const storeForDate=rows[0]?.store || state.activeStore;
-    let body=`<div class="datehead"><input value="${storeForDate}" onchange="renameLedgerStore('${date}',this.value)">
-      <input type="date" value="${date}" style="width:auto;" onchange="moveDate('${date}',this.value)"></div>
-      <table class="ledger"><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th><th>Inc%</th><th>Sold Place</th><th></th></tr></thead><tbody>`;
-    let dayTotal=0, dayInc=0;
-    rows.forEach(e=>{
-      const t=e.qty*e.price; dayTotal+=t; dayInc+=t*state.incentivePct/100;
-      body+=`<tr>
-        <td><input value="${e.item}" onchange="editCell('${e.id}','item',this.value)"></td>
-        <td><input type="number" value="${e.qty}" style="width:44px" onchange="editCell('${e.id}','qty',this.value)"></td>
-        <td><input type="number" value="${e.price}" style="width:50px" onchange="editCell('${e.id}','price',this.value)"></td>
-        <td>${t.toFixed(2)}</td>
-        <td>${(t*state.incentivePct/100).toFixed(2)}</td>
-        <td><input value="${e.soldPlace||''}" onchange="editCell('${e.id}','soldPlace',this.value)"></td>
-        <td><button class="ghost" style="padding:3px 6px;" onclick="deleteRow('${e.id}')">🗑</button></td>
-      </tr>`;
-    });
-    body+=`</tbody></table><div class="totals">DAY SALES: ${dayTotal.toFixed(2)} AED · INCENTIVE: ${dayInc.toFixed(2)} AED</div>
-      <div class="row" style="margin-top:6px;"><button class="ghost" onclick="addRow('${date}','${storeForDate}')">+ Add Row</button><button class="ghost" onclick="exportCSV('${date}')">CSV</button><button class="ghost" onclick="exportTSV('${date}')">TSV</button><button class="wa" onclick="shareWA('${date}')">WhatsApp</button></div>`;
-    card.innerHTML=body; el.appendChild(card);
-  });
-  if(!dates.length) el.innerHTML='<div class="card">No entries yet.</div>';
-}
-function editCell(id,field,val){
-  const e=state.entries.find(x=>x.id===id); if(!e) return;
-  snapshot();
-  if(field==='qty'||field==='price') e[field]=parseFloat(val)||0; else e[field]=val;
-  saveLocal();
-}
-function renameLedgerStore(date,val){ snapshot(); state.entries.forEach(e=>{if(e.date===date)e.store=val;}); saveLocal(); }
-function setIncentive(v){ snapshot(); state.incentivePct=parseFloat(v)||10; saveLocal(); renderLedger(); }
-function addRow(date,store){ snapshot(); state.entries.push({id:'e'+Date.now()+Math.random().toString(16).slice(2),date,store,item:'New Item',qty:1,price:0,soldPlace:store}); saveLocal(); renderLedger(); }
-function deleteRow(id){ if(!confirm('Delete this row?'))return; snapshot(); state.entries=state.entries.filter(e=>e.id!==id); saveLocal(); renderLedger(); }
-function moveDate(oldDate,newDate){ if(!newDate||oldDate===newDate)return; snapshot(); state.entries.forEach(e=>{if(e.date===oldDate)e.date=newDate;}); saveLocal(); renderLedger(); }
-function addNewDate(){ const d=prompt('New date (YYYY-MM-DD)',todayStr()); if(!d)return; const store=prompt('Store',state.activeStore)||state.activeStore; snapshot(); state.entries.push({id:'e'+Date.now()+Math.random().toString(16).slice(2),date:d,store,item:'New Item',qty:1,price:0,soldPlace:store}); saveLocal(); renderLedger(); }
-
-/* ---------- Export ---------- */
-function rowsFor(date){ return date? state.entries.filter(e=>e.date===date) : state.entries; }
-function buildReportText(date){
-  const rows=rowsFor(date);
-  const byDate={};
-  rows.forEach(e=>{ (byDate[e.date]=byDate[e.date]||[]).push(e); });
-  let out='';
-  Object.keys(byDate).sort().forEach(d=>{
-    const rs=byDate[d]; const store=rs[0]?.store||'';
-    out+=`STORE ${store} DATE ${fmtDMY(d)}\nITEM\tQTY\tUNIT PRICE (AED)\tTOTAL (AED)\tINCENTIVE ${state.incentivePct}% (AED)\tDAY SALES\tSOLD PLACE\n`;
-    let dayTotal=0;
-    rs.forEach(e=>{ const t=e.qty*e.price; dayTotal+=t;
-      out+=`${e.item}\t${e.qty}\t${e.price}\t${t.toFixed(2)}\t${(t*state.incentivePct/100).toFixed(2)}\t\t${e.soldPlace||''}\n`; });
-    out+=`\tTOTAL\t\t${dayTotal.toFixed(2)}\t${(dayTotal*state.incentivePct/100).toFixed(2)}\t${dayTotal.toFixed(2)}\t\n\n`;
-  });
-  return out;
-}
-function exportCSV(date){
-  const txt=buildReportText(date).replace(/\t/g,',');
-  const blob=new Blob([txt],{type:'text/csv'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=`VYSAKH_SALES_${date||'ALL'}.csv`; a.click();
-}
-function exportTSV(date){
-  const txt=buildReportText(date);
-  const blob=new Blob([txt],{type:'text/tab-separated-values'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=`VYSAKH_SALES_${date||'ALL'}.tsv`; a.click();
-}
-function shareWA(date){
-  const rows=rowsFor(date);
-  const byDate={}; rows.forEach(e=>{ (byDate[e.date]=byDate[e.date]||[]).push(e); });
-  let msg='*VYSAKH SALES REPORT*\n';
-  Object.keys(byDate).sort().forEach(d=>{
-    const rs=byDate[d]; msg+=`\n📅 ${fmtDMY(d)} — ${rs[0]?.store||''}\n`;
-    let dayTotal=0;
-    rs.forEach(e=>{ const t=e.qty*e.price; dayTotal+=t; msg+=`• ${e.item} ×${e.qty} = ${t.toFixed(2)} AED\n`; });
-    msg+=`Total: ${dayTotal.toFixed(2)} AED | Incentive: ${(dayTotal*state.incentivePct/100).toFixed(2)} AED\n`;
-  });
-  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
-}
-
-/* ---------- History / reconciliation ---------- */
-function renderHistory(){
-  document.getElementById('reportDate').value=state.recon.reportDate||'';
-  document.getElementById('amountRecv').value=state.recon.amountReceived||0;
-  const totalInc=state.entries.reduce((s,e)=>s+e.qty*e.price*state.incentivePct/100,0);
-  const pending=totalInc-(state.recon.amountReceived||0);
-  document.getElementById('reconTotals').innerHTML=
-    `Total incentive earned: ${totalInc.toFixed(2)} AED<br>Pending balance: <span style="color:${pending>0?'#c2410c':'#059669'}">${pending.toFixed(2)} AED</span>`;
-  const dates=[...new Set(state.entries.map(e=>e.date))].sort().reverse();
-  const list=document.getElementById('dateStatusList'); list.innerHTML='';
-  const sentMap = state.recon.sentDates || {};
-  dates.forEach(d=>{
-    const sent = !!sentMap[d];
-    const row=document.createElement('div'); row.className='row'; row.style.justifyContent='space-between';
-    row.innerHTML=`<span>${fmtDMY(d)}</span><button class="badge ${sent?'sent':'pending'}" onclick="toggleSent('${d}')">${sent?'✓ REPORT SENT':'PENDING REPORT'}</button>`;
-    list.appendChild(row);
-  });
-}
-function saveRecon(){
-  snapshot();
-  state.recon.reportDate=document.getElementById('reportDate').value;
-  state.recon.amountReceived=parseFloat(document.getElementById('amountRecv').value)||0;
-  saveLocal(); renderHistory();
-}
-function toggleSent(date){
-  snapshot();
-  if(!state.recon.sentDates) state.recon.sentDates={};
-  state.recon.sentDates[date]=!state.recon.sentDates[date];
-  saveLocal(); renderHistory();
-}
-
-/* ---------- Smart paste ---------- */
-function openPaste(){ document.getElementById('pasteModal').classList.add('show'); }
-function closePaste(){ document.getElementById('pasteModal').classList.remove('show'); }
-function doPaste(){
-  const raw=document.getElementById('pasteArea').value.trim();
-  if(!raw){ closePaste(); return; }
-  const lines=raw.split('\n');
-  let curDate=todayStr(), curStore=state.activeStore;
-  snapshot();
-  lines.forEach(line=>{
-    const sh=line.match(/STORE\s+(.+?)\s+DATE\s+([\d\-\/]+)/i);
-    if(sh){ curStore=sh[1].trim(); let d=sh[2].trim();
-      const dm=d.match(/(\d{2})-(\d{2})-(\d{4})/); if(dm) d=`${dm[3]}-${dm[2]}-${dm[1]}`;
-      curDate=d; if(!state.stores.includes(curStore)) state.stores.push(curStore);
-      return;
-    }
-    const delim=line.includes('\t')?'\t':(line.includes(',')?',':null);
-    if(!delim) return;
-    const parts=line.split(delim).map(s=>s.trim());
-    if(!parts[0] || /ITEM/i.test(parts[0]) || /TOTAL/i.test(parts[0])) return;
-    const qty=parseFloat(parts[1]); const price=parseFloat(parts[2]);
-    if(isNaN(qty)||isNaN(price)) return;
-    state.entries.push({id:'e'+Date.now()+Math.random().toString(16).slice(2), date:curDate, store:curStore, item:parts[0], qty, price, soldPlace:parts[6]||curStore});
-  });
-  saveLocal(); closePaste(); renderAll();
-  document.getElementById('pasteArea').value='';
-}
-
-/* ---------- Render all ---------- */
-function renderAll(){
-  renderStoreBar(); renderBrandRow(); renderGrid(); renderTodayList();
-  if(document.getElementById('p-ledger').classList.contains('show')) renderLedger();
-  if(document.getElementById('p-history').classList.contains('show')) renderHistory();
-}
-renderAll();
-document.getElementById('p-entries').classList.add('in');
-</script>
-</body>
-</html>
+        <!-- ========== SALES TRANSACTIONS (Fact) ========== -->
+        <div class="section-title">
+            <i class="fas fa-receipt"></i> Sales Transactions
+            <span class="count">50</span>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Txn ID</th>
+                        <th>Location</th>
+                        <th>Date</th>
+                        <th>Product</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-right">Unit Price</th>
+                        <th class="text-right">Gross</th>
+                        <th>Promo</th>
+                        <th class="text-right">Discount</th>
+                        <th class="text-right">Net</th>
+                        <th>DQ Flag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="text-mono">TXN-001</td><td>DUBAI MALL</td><td>2026-10-23</td><td>PRD-01</td><td class="text-center">2</td><td class="text-right">189.00</td><td class="text-right">378.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">378.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-002</td><td>DUBAI MALL</td><td>2026-10-23</td><td>PRD-02</td><td class="text-center">1</td><td class="text-right">298.00</td><td class="text-right">298.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">298.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-003</td><td>MARINA MALL</td><td>2026-10-24</td><td>PRD-01</td><td class="text-center">1</td><td class="text-right">189.00</td><td class="text-right">189.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">189.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-004</td><td>MARINA MALL</td><td>2026-10-24</td><td>PRD-02</td><td class="text-center">1</td><td class="text-right">298.00</td><td class="text-right">298.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">298.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-005</td><td>DUBAI MALL</td><td>2026-10-25</td><td>PRD-03</td><td class="text-center">1</td><td class="text-right">126.00</td><td class="text-right">126.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">126.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-006</td><td>DUBAI MALL</td><td>2026-10-25</td><td>PRD-01</td><td class="text-center">2</td><td class="text-right">189.00</td><td class="text-right">378.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">378.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-007</td><td>DUBAI MALL</td><td>2026-10-25</td><td>PRD-04</td><td class="text-center">1</td><td class="text-right">299.00</td><td class="text-right">299.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">299.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-008</td><td>MARINA MALL</td><td>2026-10-27</td><td>PRD-01</td><td class="text-center">1</td><td class="text-right">189.00</td><td class="text-right">189.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">189.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-009</td><td>MARINA MALL</td><td>2026-10-27</td><td>PRD-05</td><td class="text-center">1</td><td class="text-right">200.00</td><td class="text-right">200.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">200.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-010</td><td>DUBAI MALL</td><td>2026-10-28</td><td>PRD-01</td><td class="text-center">2</td><td class="text-right">189.00</td><td class="text-right">378.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">378.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-011</td><td>DUBAI MALL</td><td>2026-10-28</td><td>PRD-04</td><td class="text-center">1</td><td class="text-right">299.00</td><td class="text-right">299.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">299.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-012</td><td>DUBAI MALL</td><td>2026-10-28</td><td>PRD-06</td><td class="text-center">2</td><td class="text-right">150.00</td><td class="text-right">300.00</td><td><span class="promo-tag">B1GSH</span></td><td class="text-right">150.00</td><td class="text-right">150.00</td><td><span class="flag-review"><i class="fas fa-exclamation-triangle"></i> REVIEW</span></td></tr>
+                    <tr><td class="text-mono">TXN-013</td><td>DUBAI MALL</td><td>2026-10-28</td><td>PRD-02</td><td class="text-center">1</td><td class="text-right">298.00</td><td class="text-right">298.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">298.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-014</td><td>DUBAI MALL</td><td>2026-10-29</td><td>PRD-01</td><td class="text-center">1</td><td class="text-right">189.00</td><td class="text-right">189.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">189.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-015</td><td>DUBAI MALL</td><td>2026-10-29</td><td>PRD-02</td><td class="text-center">1</td><td class="text-right">298.00</td><td class="text-right">298.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">298.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-016</td><td>DUBAI MALL</td><td>2026-10-29</td><td>PRD-07</td><td class="text-center">1</td><td class="text-right">152.25</td><td class="text-right">152.25</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">152.25</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-017</td><td>DUBAI MALL</td><td>2026-10-29</td><td>PRD-08</td><td class="text-center">1</td><td class="text-right">152.25</td><td class="text-right">152.25</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">152.25</td><td><span class="flag-review"><i class="fas fa-exclamation-triangle"></i> REVIEW</span></td></tr>
+                    <tr><td class="text-mono">TXN-018</td><td>RESIDENCE</td><td>2026-10-30</td><td>PRD-09</td><td class="text-center">1</td><td class="text-right">122.00</td><td class="text-right">122.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">122.00</td><td><span class="flag-ok"><i class="fas fa-check-circle"></i> OK</span></td></tr>
+                    <tr><td class="text-mono">TXN-019</td><td>RESIDENCE</td><td>2026-10-30</td><td>PRD-07</td><td class="text-center">1</td><td class="text-right">152.00</td><td class="text-right">152.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">152.00</td><td><span class="flag-review"><i class="fas fa-exclamation-triangle"></i> REVIEW</span></td></tr>
+                    <tr><td class="text-mono">TXN-020</td><td>RESIDENCE</td><td>2026-10-30</td><td>PRD-05</td><td class="text-center">2</td><td class="text-right">200.00</td><td class="text-right">400.00</td><td><span class="promo-tag">BOSH</span></td><td class="text-right">100.00</td><td class="text-right">300.00</td><td><span class="flag-review"><i class="fas fa-exclamation-triangle"></i> REVIEW</span></td></tr>
+                    <tr><td class="text-mono">TXN-021</td><td>RESIDENCE</td><td>2026-10-30</td><td>PRD-08</td><td class="text-center">1</td><td class="text-right">290.00</td><td class="text-right">290.00</td><td><span class="promo-tag empty">—</span></td><td class="text-right">0.00</td><td class="text-right">290.00
